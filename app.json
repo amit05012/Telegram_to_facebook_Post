@@ -1,0 +1,51 @@
+{
+  "name": "Facebook Bot",
+  "description": "a bot post message in Facebook page by special links",
+  "keywords": [
+    "telegram",
+    "Facebook"
+  ],
+  "repository": "https://github.com/amit05012/facebook",
+  "env": {
+    "BOT_TOKEN": {
+      "description": "Your Bot token, Get it from @Botfather",
+      "value": ""
+    },
+    "TOKEN": {
+      "description": "Your Facebook access token, Get it from https://developers.facebook.com/",
+      "value": ""
+    },
+    "CHAT": {
+      "description": "the auth channel id from which bot should post messages",
+      "value": "-100"
+    },
+    "API_ID":{
+      "description": "your api id, take it from my.telegram.org",
+      "value": ""
+    },
+    "API_HASH":{
+      "description": "your api hash, take it from my.telegram.org",
+      "value": ""
+    },
+    "BLOCK":{
+      "description": "words that shouldn't be posted in fb page separate them with white space",
+      "value": ""
+    },
+    "LINKS":{
+      "description": "Domains of the links which should be posted separate them with white space",
+      "value": ""
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}
+
