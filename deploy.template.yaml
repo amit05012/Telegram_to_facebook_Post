@@ -1,0 +1,21 @@
+spec:
+  name: sample-python
+  services:
+    - name: sample-python
+      git:
+        branch: main
+      envs:
+      - key: BOT_TOKEN
+        value: ""
+      - key: TOKEN
+        value: ""
+      - key: CHAT
+        value: "-100"
+      - key: API_ID
+        value: ""
+      - key: API_HASH
+        value: ""
+      - key: BLOCK
+        value: ""
+      - key: LINK
+        value: ""
