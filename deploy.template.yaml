@@ -3,6 +3,7 @@ spec:
   services:
     - name: sample-python
       git:
+        repo: https://github.com/amit05012/facebook
         branch: main
       envs:
       - key: BOT_TOKEN
