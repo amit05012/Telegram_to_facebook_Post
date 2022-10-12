@@ -15,8 +15,8 @@ if len(CHAT) != len(TOKEN):
     # stopping code if number of tokens provided not equal to number of channels provided 
     print('Tg Channel number and fb page tokens number dosent match!!')
 
-LINKS = [x.lower() for x in environ.get("LINKS", "").split(" ")]
-BLOCK = [x.lower() for x in environ.get("BLOCK", "").split(" ")]
+LINKS = [x.lower() for x in environ.get("LINKS", "").split(",")]
+BLOCK = [x.lower() for x in environ.get("BLOCK", "").split(",")]
 
 
 # Creating telegram client using pyrogram
@@ -30,12 +30,14 @@ fb = Client(
 
 @fb.on_message(filters.channel)
 async def link_handle(c, m):
+    index = CHAT.index(m.chat.id) #getiing channel index
     txt = m.text if m.text else m.caption
-    if any(word in txt.lower() for word in BLOCK): #checking for blocked words
+    blocks = [i.strip() for i in BLOCK[index].split(" ")]
+    links = [i.strip() for i in LINKS[index].split(" ")]
+    if any(word in txt.lower() for word in blocks): #checking for blocked words
         return print('Blocked:', txt) #blocking blocked words
-    if m.chat.id in CHAT and any(link in txt.lower() for link in LINKS):
+    if m.chat.id in CHAT and any(link in txt.lower() for link in links):
         try:
-            index = CHAT.index(m.chat.id) #getiing channel index
             graph = GraphAPI(access_token=TOKEN[index]) #creating facebook client
             post_id = graph.put_object(parent_object='me', connection_name='feed', message=txt) #posting message on facebook page
             print('Post ID: ', post_id, '\nMessage: ', txt)
