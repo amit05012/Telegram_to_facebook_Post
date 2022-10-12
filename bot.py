@@ -1,24 +1,25 @@
-import logging
-logging.getLogger().setLevel(logging.ERROR)
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
-
-log = logging.getLogger(__name__)
-
-import os
-import facebook
+# importing needs
+from os import environ
+from facebook import GraphAPI
 from pyrogram import Client, filters
-from pyrogram.handlers import MessageHandler
 
 
-API_ID = int(os.environ.get("API_ID", 0))
-API_HASH = os.environ.get("API_HASH", None)
-BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
-TOKEN = os.environ.get("TOKEN", None)
-LINKS = [x.lower() for x in os.environ.get("LINKS", "").split(" ")]
-CHAT = [int(x) for x in os.environ.get("CHAT", "").split(" ")]
-BLOCK = [x.lower() for x in os.environ.get("BLOCK", "").split(" ")]
+# Getting the useful values 
+API_ID = int(environ.get("API_ID", 0))
+API_HASH = environ.get("API_HASH", None)
+BOT_TOKEN = environ.get("BOT_TOKEN", None)
+
+TOKEN = [x for x in environ.get("TOKEN", "").split(" ")]
+CHAT = [int(x) for x in environ.get("CHAT", "").split(" ")]
+if len(CHAT) != len(TOKEN):
+    # stopping code if number of tokens provided not equal to number of channels provided 
+    print('Tg Channel number and fb page tokens number dosent match!!')
+
+LINKS = [x.lower() for x in environ.get("LINKS", "").split(" ")]
+BLOCK = [x.lower() for x in environ.get("BLOCK", "").split(" ")]
 
 
+# Creating telegram client using pyrogram
 fb = Client(
     name='fbBot',
     bot_token=BOT_TOKEN,
@@ -30,16 +31,19 @@ fb = Client(
 @fb.on_message(filters.channel)
 async def link_handle(c, m):
     txt = m.text if m.text else m.caption
-    if any(word in txt.lower() for word in BLOCK):
-        return print('Blocked:', txt)
+    if any(word in txt.lower() for word in BLOCK): #checking for blocked words
+        return print('Blocked:', txt) #blocking blocked words
     if m.chat.id in CHAT and any(link in txt.lower() for link in LINKS):
         try:
-            graph = facebook.GraphAPI(access_token=TOKEN)
-            x = graph.put_object(parent_object='me', connection_name='feed', message=txt)
-            print('Post ID: ', x, '\nMessage: ', txt)
+            index = CHAT.index(m.chat.id) #getiing channel index
+            graph = GraphAPI(access_token=TOKEN[index]) #creating facebook client
+            post_id = graph.put_object(parent_object='me', connection_name='feed', message=txt) #posting message on facebook page
+            print('Post ID: ', post_id, '\nMessage: ', txt)
         except Exception as e:
             print('Error: ', e)
 
-if __name__ == '__main__':
-    print('Started')
+
+if __name__ == '__main__' and len(CHAT) == len(TOKEN):
+    print('Started your bot')
     fb.run()
+    print('Bot has been stopped')
